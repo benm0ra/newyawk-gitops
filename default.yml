@@ -13,14 +13,7 @@
 
 org_settings:
   org_info:
-    ###########################################################
-    # The name of your organization is displayed to end users
-    # during the setup experience for new hardware, and to admins
-    # in the Fleet UI.
-    #
-    # Read more:
-    #   • https://fleetdm.com/docs/configuration/yaml-files#org-info
-    ###########################################################
+
     org_name: figma1
   webhook_settings:
     activities_webhook:
