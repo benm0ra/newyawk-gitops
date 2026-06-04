@@ -72,7 +72,7 @@ controls:
 # Apps to make available from the Apple App Store or Google Play
 ###########################################################
 software:
-  app_store_apps:
+  app_store_apps: []
     ###########################################################
     # iOS apps
     ###########################################################
@@ -107,8 +107,9 @@ software:
     #   display_name: "Slack"
     #   self_service: true
     #   setup_experience: true
-    labels:
-      -name: C-Suite
-      description: Hosts belonging to the C-Suite
-      label_membership_type: manual
-      hosts:
+
+labels:
+  - name: C-Suite
+    description: Hosts belonging to the C-Suite
+    label_membership_type: manual
+    hosts:
