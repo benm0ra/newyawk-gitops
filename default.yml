@@ -13,10 +13,6 @@
 
 org_settings:
   org_info:
-  webhook_settings:
-  activities_webhook:
-  enable_activities_webhook: true
-  destination_url: https://webhook.site/674d67e2-9dbe-4552-bc14-4d787bbbccfb
     ###########################################################
     # The name of your organization is displayed to end users
     # during the setup experience for new hardware, and to admins
@@ -26,6 +22,10 @@ org_settings:
     #   • https://fleetdm.com/docs/configuration/yaml-files#org-info
     ###########################################################
     org_name: figma1
+  webhook_settings:
+    activities_webhook:
+      enable_activities_webhook: true
+      destination_url: https://webhook.site/674d67e2-9dbe-4552-bc14-4d787bbbccfb
 
   server_settings:
     ###########################################################
