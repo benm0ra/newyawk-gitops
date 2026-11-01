@@ -2,7 +2,7 @@
 
 Endpoint configuration for a [Fleet](https://fleetdm.com) device-management lab, managed entirely through git. macOS update enforcement, compliance policies, software deployment, scripts, and device labels are all declared in YAML. CI applies them to Fleet, so every change is reviewed, versioned, and easy to roll back.
 
-Built as hands-on training for the **Fleet Certified GitOps Administrator** certification.
+Built in an instructor-led Fleet lab as hands-on training for the **Fleet Certified GitOps Administrator** certification.
 
 ## How changes ship
 
