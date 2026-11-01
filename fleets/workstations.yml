@@ -184,12 +184,12 @@ software:
     #   labels_include_any:
     #     - "x86-based Windows hosts"
 
-packages: # Custom packages (if any)
-      # macOS custom packages
-      - path: ../platforms/macos/software/zoomapp
-        self_service: true
-        setup_experience: true
-        categories:
-          - Communication
-          
+  packages: # Custom packages (if any)
+    # macOS custom packages
+    - path: ../platforms/macos/software/zoom.yml
+      self_service: true
+      setup_experience: true
+      categories:
+        - Communication
+
   app_store_apps: # Apps to install via VPP from the macOS App Store, if any

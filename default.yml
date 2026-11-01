@@ -14,11 +14,16 @@
 org_settings:
   org_info:
 
-    org_name: figma1
+    org_name: Newyawk Lab
+  ###########################################################
+  # Activity webhook (disabled). To enable, store the endpoint
+  # as a CI secret and reference it here as an env var, e.g.
+  #   destination_url: $FLEET_ACTIVITIES_WEBHOOK_URL
+  # Never commit a webhook URL: it exposes audit activity.
+  ###########################################################
   webhook_settings:
     activities_webhook:
-      enable_activities_webhook: true
-      destination_url: https://webhook.site/674d67e2-9dbe-4552-bc14-4d787bbbccfb
+      enable_activities_webhook: false
 
   server_settings:
     ###########################################################
@@ -31,7 +36,7 @@ org_settings:
     server_url: $FLEET_URL
 
   fleet_desktop:
-    transparency_url: https://catoftheday.com
+    transparency_url: https://fleetdm.com/transparency
   
   ###########################################################
   # Uncomment to use single sign-on (SSO) for admins accessing Fleet.

@@ -1,49 +1,54 @@
-# Fleet
+# Fleet GitOps: Device Management as Code
 
-These files allow you to configure, patch, and secure computing devices for your organization.
+Endpoint configuration for a [Fleet](https://fleetdm.com) device-management lab, managed entirely through git. macOS update enforcement, compliance policies, software deployment, scripts, and device labels are all declared in YAML. CI applies them to Fleet, so every change is reviewed, versioned, and easy to roll back.
 
-Whether you're making changes by hand or spinning them up from Slack or Teams using a tool like Claude or Kilo Code _(e.g. "Make our endpoints compliant with ISO 27001" or "Fix CVE-2026-XXXX")_, your team reviews, merges, and it deploys to thousands of endpoints in seconds. This makes it straightforward to instantly rollback a change, and history is fully tracked.
+Built as hands-on training for the **Fleet Certified GitOps Administrator** certification.
 
-You can read more about the anatomy of these files and what they do in [Fleet's documentation](https://fleetdm.com/docs/configuration/yaml-files). You can also opt to manage particular aspects of Fleet in the graphical user interface _instead_, such as software versions or labels.
+## How changes ship
 
-> Unsure? Talk to a human at fleetdm.com/support
+```mermaid
+flowchart LR
+  A[Edit YAML] --> B[Open pull request]
+  B --> C{CI: fleetctl gitops<br/>--dry-run}
+  C -- passes --> D[Review & merge to main]
+  D --> E[CI applies config to Fleet]
+  F[Nightly 06:00 UTC schedule] --> E
+```
 
-## How to use
+- **Pull requests** run a dry run, so a broken config fails in review instead of in production.
+- **Merges to `main`** apply the configuration to Fleet.
+- **The nightly scheduled run** re-applies `main` to undo any drift from changes made by hand in the Fleet UI.
+- **Credentials** (`FLEET_URL`, `FLEET_API_TOKEN`) live only in CI secrets. The workflow's `GITHUB_TOKEN` is limited to read-only.
 
-1. Install fleetctl. [Learn how](https://fleetdm.com/guides/fleetctl#installing-fleetctl).
+The same pipeline is defined for GitHub Actions (`.github/workflows/workflow.yml`) and GitLab CI (`.gitlab-ci.yml`).
 
-2. Open your Terminal, run `fleetctl new`, and follow instructions in the output.
+## What's managed
 
-## Tips
+| Area | Config | What it does |
+|---|---|---|
+| OS updates | `fleets/workstations.yml` | Enforces a minimum macOS version with an update deadline |
+| Policies | `platforms/macos/policies/` | Checks that all software updates are installed and that the approved DNS resolvers are in use |
+| Scripts | `platforms/macos/scripts/` | Sets DNS resolvers on every network interface; verifies the Zoom install |
+| Software | `platforms/macos/software/zoom.yml` | Deploys Zoom via self-service and during device setup, with a post-install check |
+| Enrollment | `platforms/macos/enrollment-profiles/` | Supervised, non-removable automated enrollment profile |
+| Labels | `labels/`, `global-labels.yml` | Groups hosts by architecture, OS family, IdP department, and uptime for scoping |
+| Fleets | `fleets/` | Separate fleets for company workstations and personal mobile devices |
 
-The action (GitHub) or pipeline (GitLab) runs will fail until you add `FLEET_URL` and `FLEET_API_TOKEN` as [secrets (GitHub)](#github) or [CI/CD variables (GitLab)](#gitlab).
+## Repository layout
 
-Set `FLEET_URL` to your Fleet instance's URL (ex. https://organization.fleet.com).
+```
+default.yml             # Org-wide settings and global labels
+fleets/                 # Per-fleet controls, policies, software
+labels/                 # Reusable host labels
+platforms/<os>/         # Profiles, policies, scripts, software per platform
+.github/                # GitHub Actions workflow + fleet-gitops action
+.gitlab-ci.yml          # Equivalent GitLab pipeline
+```
 
-If you're using Fleet Free, set the API-only user's role to global admin.
+## Setup
 
-### GitHub
+1. Install `fleetctl` ([docs](https://fleetdm.com/guides/fleetctl#installing-fleetctl)).
+2. Add `FLEET_URL` and `FLEET_API_TOKEN` as repository secrets (GitHub) or CI/CD variables (GitLab). Use an API-only user for the token.
+3. Enable the **Apply latest configuration to Fleet** workflow and run it once by hand.
 
-To add GitHub secrets, see [the GitHub docs](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository).
-
-In GitHub, enable the `Apply latest configuration to Fleet` GitHub Actions workflow, and run workflow manually. Now, when anyone pushes a new commit to the default branch, the action will run and update Fleet. For pull requests, the workflow will do a dry run only.
-
-### GitLab
-
-To add GitLab CI/CD variables, see [the Gitlab docs](https://docs.gitlab.com/ee/ci/variables/#define-a-cicd-variable-in-the-ui).
-
-To ensure your Fleet configuration stays up to date even when there are no new commits, set up a scheduled pipeline:
-   - In your GitLab project, go to the left sidebar and navigate to **Build > Pipeline schedules**. (In some GitLab versions, this may appear as **CI/CD > Schedules**.)
-   - Click **Create a new pipeline schedule** (or **Schedule a new pipeline**).
-   - Fill in the form:
-      - **Description**: e.g., `Daily GitOps sync`
-      - **Cron timezone**: e.g., `[UTC 0] UTC`
-      - **Interval pattern**: e.g., Custom: `0 6 * * *` (runs nightly at 6AM UTC)
-      - **Target branch or tag**: your default branch (e.g., `main`)
-   - Click **Create pipeline schedule**.
-
-## What is Fleet?
-
-Fleet is high-agency device management software. It is especially popular with [IT and security teams who manage lots of endpoints](https://fleetdm.com/customers).
-
-All source code [is public](https://fleetdm.com/transparency) and the product is supported by a [company called Fleet Device Management](https://fleetdm.com/handbook/company) that enrolls millions of laptops, tablets, phones, servers, and other computing devices in 90+ countries.
+Format reference: [Fleet YAML files](https://fleetdm.com/docs/configuration/yaml-files).
